@@ -1,7 +1,7 @@
 on: push
 name: CI
 jobs:
-  fmt:
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -24,3 +24,45 @@ jobs:
         with:
           command: clippy
           args: --all-features -- -D warnings
+
+  test_linux:
+    name: Test (linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: cargo test --all-features
+
+  test_windows:
+    name: Test (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: cargo test --all-features
+
+  test_mac:
+    name: Test (mac)
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: cargo test --all-features
