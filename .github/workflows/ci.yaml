@@ -58,7 +58,7 @@ jobs:
           command: test
           args: --release
 
-  # test 1
+  # test 2
   deny-check:
     name: cargo-deny
     runs-on: ubuntu-latest
