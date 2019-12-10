@@ -1,12 +1,12 @@
 on: [push, pull_request]
 name: CI
 jobs:
-  # test 4
+  # test 5
   deny-check:
     name: cargo-deny
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: repi/test-action@HEAD
+      - uses: repi/test-action@test
         with:
           command: check
