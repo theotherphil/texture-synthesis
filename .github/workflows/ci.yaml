@@ -1,7 +1,7 @@
 on: [push, pull_request]
 name: CI
 jobs:
-  # test 5
+  # test 6
   deny-check:
     name: cargo-deny
     runs-on: ubuntu-latest
