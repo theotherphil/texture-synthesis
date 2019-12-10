@@ -64,6 +64,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: repi/test-action@HEAD
+        with:
+          command: check
 
   publish-check:
     name: Publish Check
