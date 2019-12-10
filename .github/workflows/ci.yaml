@@ -2,10 +2,12 @@ on: [push, pull_request]
 name: CI
 jobs:
   cargo-insatll:
-    - name: install cargo
-      uses: actions-rs/cargo@v1
-      with:
-        command: metadata
+    name: install cargo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-rs/cargo@v1
+        with:
+          command: metadata
 
   # test 8
   deny-check:
