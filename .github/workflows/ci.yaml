@@ -1,7 +1,14 @@
 on: [push, pull_request]
 name: CI
 jobs:
-  # test 7
+
+  - name: install cargo
+    uses: actions-rs/cargo@v1
+    with:
+      command: metadata
+
+
+  # test 8
   deny-check:
     name: cargo-deny
     runs-on: ubuntu-latest
