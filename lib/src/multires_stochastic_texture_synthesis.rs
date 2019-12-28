@@ -82,7 +82,7 @@ struct SignedCoord2D {
 }
 
 impl SignedCoord2D {
-    fn from(x: i32, y: i32) -> Self {
+    fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 
@@ -444,7 +444,7 @@ impl Generator {
                 .unwrap()
                 .nearest_neighbor_iter(&[coord.x as i32, coord.y as i32])
                 .take(k as usize)
-                .map(|a| SignedCoord2D::from((*a)[0], (*a)[1])),
+                .map(|a| SignedCoord2D::new((*a)[0], (*a)[1])),
         );
         true
     }
@@ -549,7 +549,7 @@ impl Generator {
             let (n_original_coord, _) = self.coord_map.as_ref()[n_flat_coord];
             let (n_patch_id, n_map_id) = self.id_map.as_ref()[n_flat_coord];
             //candidate coord is the original location of the neighbor + neighbor's shift to the center
-            let candidate_coord = SignedCoord2D::from(
+            let candidate_coord = SignedCoord2D::new(
                 n_original_coord.x as i32 + shift.0,
                 n_original_coord.y as i32 + shift.1,
             );
@@ -563,7 +563,7 @@ impl Generator {
                 //lets construct the full candidate pattern of neighbors identical to the center coord
                 candidates_vec[candidate_count]
                     .k_neighs
-                    .resize(k_neighs.len(), (SignedCoord2D::from(0, 0), MapId(0)));
+                    .resize(k_neighs.len(), (SignedCoord2D::new(0, 0), MapId(0)));
 
                 for (output, n2) in candidates_vec[candidate_count]
                     .k_neighs
@@ -571,7 +571,7 @@ impl Generator {
                     .zip(k_neighs)
                 {
                     let shift = (n2.x - unresolved_coord.x, n2.y - unresolved_coord.y);
-                    let n2_coord = SignedCoord2D::from(
+                    let n2_coord = SignedCoord2D::new(
                         candidate_coord.x + shift.0,
                         candidate_coord.y + shift.1,
                     );
@@ -602,7 +602,7 @@ impl Generator {
             loop {
                 rand_x = rng.gen_range(0, dims.width) as i32;
                 rand_y = rng.gen_range(0, dims.height) as i32;
-                candidate_coord = SignedCoord2D::from(rand_x, rand_y);
+                candidate_coord = SignedCoord2D::new(rand_x, rand_y);
                 if check_coord_validity(
                     candidate_coord,
                     MapId(rand_map),
@@ -618,7 +618,7 @@ impl Generator {
             //lets construct the full neighborhood pattern
             candidates_vec[candidate_count]
                 .k_neighs
-                .resize(k_neighs.len(), (SignedCoord2D::from(0, 0), MapId(0)));
+                .resize(k_neighs.len(), (SignedCoord2D::new(0, 0), MapId(0)));
 
             for (output, n2) in candidates_vec[candidate_count]
                 .k_neighs
@@ -627,7 +627,7 @@ impl Generator {
             {
                 let shift = (unresolved_coord.x - n2.x, unresolved_coord.y - n2.y);
                 let n2_coord =
-                    SignedCoord2D::from(candidate_coord.x + shift.0, candidate_coord.y + shift.1);
+                    SignedCoord2D::new(candidate_coord.x + shift.0, candidate_coord.y + shift.1);
 
                 *output = (n2_coord, map_id)
             }
