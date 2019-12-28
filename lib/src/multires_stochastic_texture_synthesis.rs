@@ -55,7 +55,7 @@ pub(crate) struct GuidesPyramid {
 }
 
 impl GuidesPyramid {
-    fn to_guides_struct(&self, level: usize) -> Guides<'_> {
+    fn to_guides(&self, level: usize) -> Guides<'_> {
         let tar_guide = ImageBuffer::from(&self.target_guide.pyramid[level]);
         let ex_guide = self
             .example_guides
@@ -1228,5 +1228,5 @@ fn get_single_guide_level(
 ) -> Option<Guides<'_>> {
     guides_pyramid
         .as_ref()
-        .map(|guides_pyr| guides_pyr.to_guides_struct(pyramid_level))
+        .map(|guides_pyr| guides_pyr.to_guides(pyramid_level))
 }
