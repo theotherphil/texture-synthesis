@@ -852,10 +852,6 @@ impl Generator {
 
                             let unresolved_2d = next_unresolved.to_2d(self.output_size);
 
-                            // Clear previously found candidate neighbors
-                            for cand in candidates.iter_mut() {
-                                cand.clear();
-                            }
                             k_neighs.clear();
 
                             // 2. find K nearest resolved neighs
