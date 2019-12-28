@@ -38,12 +38,6 @@ struct Candidate {
     id: (PatchId, MapId),
 }
 
-impl Candidate {
-    fn clear(&mut self) {
-        self.k_neighs.clear();
-    }
-}
-
 struct Guides<'a> {
     pub example_guides: Vec<ImageBuffer<'a>>, // as many as there are examples
     pub target_guide: ImageBuffer<'a>,        //single for final color_map
