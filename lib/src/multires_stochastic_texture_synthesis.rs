@@ -449,7 +449,7 @@ impl Generator {
         true
     }
 
-    fn get_distances_to_k_neighs(&self, coord: Coord2D, k_neighs_2d: &[SignedCoord2D]) -> Vec<f64> {
+    fn get_gaussian_weighted_distances_to_k_neighs(&self, coord: Coord2D, k_neighs_2d: &[SignedCoord2D]) -> Vec<f64> {
         let (dimx, dimy) = (
             f64::from(self.output_size.width),
             f64::from(self.output_size.height),
@@ -467,7 +467,16 @@ impl Generator {
         //divide by avg
         let avg: f64 = k_neighs_dist.iter().sum::<f64>() / (k_neighs_dist.len() as f64);
 
-        k_neighs_dist.iter_mut().for_each(|d| *d /= avg);
+        // Each value is repeated four times, so we don't need to compute `exp` for each.
+        for i in 0..k_neighs_dist.len() / 4 {
+            let scaled = k_neighs_dist[i] / avg;
+            let scaled = f64::exp(-1.0f64 * scaled);
+            k_neighs_dist[i] = scaled;
+            k_neighs_dist[i + 1] = scaled;
+            k_neighs_dist[i + 2] = scaled;
+            k_neighs_dist[i + 3] = scaled;
+        }
+
         k_neighs_dist
     }
 
@@ -857,8 +866,8 @@ impl Generator {
                                 &mut k_neighs,
                             ) {
                                 //2.1 get distances to the pattern of neighbors
-                                let k_neighs_dist =
-                                    self.get_distances_to_k_neighs(unresolved_2d, &k_neighs);
+                                let weighted_k_neighs_dist =
+                                    self.get_gaussian_weighted_distances_to_k_neighs(unresolved_2d, &k_neighs);
                                 let k_neighs_w_map_id =
                                     k_neighs.iter().map(|a| (*a, MapId(0))).collect::<Vec<_>>();
 
@@ -908,7 +917,7 @@ impl Generator {
                                     &candidates,
                                     &pattern,
                                     &guide_pattern,
-                                    &k_neighs_dist,
+                                    &weighted_k_neighs_dist,
                                     &cost,
                                     guide_cost,
                                 );
@@ -1061,19 +1070,12 @@ fn find_best_match<'a>(
     candidates: &'a [Candidate],
     precomputed_pattern: &ColorPattern,
     precomputed_guide_pattern: &ColorPattern,
-    k_distances: &[f64], //weight by distance
+    distance_gaussians: &[f64], //weight by distance
     cost: &PrerenderedU8Function,
     guide_cost: Option<&PrerenderedU8Function>,
 ) -> (&'a Candidate, Score) {
     let mut best_match = 0;
     let mut lowest_cost = std::f32::MAX;
-
-    let distance_gaussians: Vec<f32> = k_distances
-        .iter()
-        .copied()
-        .map(|d| f64::exp(-1.0f64 * d))
-        .map(|d| d as f32)
-        .collect();
 
     for (i, cand) in candidates.iter().enumerate() {
         if let Some(cost) = better_match(
@@ -1083,7 +1085,7 @@ fn find_best_match<'a>(
             &guides,
             &precomputed_pattern,
             &precomputed_guide_pattern,
-            distance_gaussians.as_slice(),
+            distance_gaussians,
             cost,
             guide_cost,
             lowest_cost,
@@ -1104,7 +1106,7 @@ fn better_match(
     guides: &Option<Guides<'_>>,
     precomputed_pattern: &ColorPattern,
     precomputed_guide_pattern: &ColorPattern,
-    distance_gaussians: &[f32], //weight by distance
+    distance_gaussians: &[f64], //weight by distance
     cost: &PrerenderedU8Function,
     guide_cost: Option<&PrerenderedU8Function>,
     current_best: f32,
@@ -1150,7 +1152,7 @@ fn better_match(
                     guide_cost.get(precomputed_guide_pattern.0[i + channel_n], channel);
             }
         }
-        score += next_pixel_score * distance_gaussians[i];
+        score += next_pixel_score * distance_gaussians[i] as f32;
         if score >= current_best {
             return None;
         }
