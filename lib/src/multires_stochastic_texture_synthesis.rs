@@ -613,7 +613,7 @@ impl Generator {
                 ) {
                     break coord;
                 }
-            }
+            };
             //for patch id (since we are not copying from a generated patch anymore), we take the pixel location in the example map
             let map_id = MapId(rand_map);
             let patch_id = PatchId(candidate_coord.to_unsigned().to_flat(dims).0);
